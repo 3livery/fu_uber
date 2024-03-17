@@ -33,8 +33,8 @@ class OtpBottomSheet extends StatelessWidget {
             maxLength: 4,
             hasError: verificationModel.ifOtpHasError,
             maskCharacter: "*",
-            pinCodeTextFieldLayoutType:
-            PinCodeTextFieldLayoutType.AUTO_ADJUST_WIDTH,
+            // pinCodeTextFieldLayoutType:
+            // PinCodeTextFieldLayoutType.AUTO_ADJUST_WIDTH,
             wrapAlignment: WrapAlignment.start,
             pinBoxDecoration:
             ProvidedPinBoxDecoration.underlinedPinBoxDecoration,
@@ -46,9 +46,11 @@ class OtpBottomSheet extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.all(15),
-          child: RaisedButton(
-            disabledColor: Colors.black87,
-            color: Colors.black87,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black87,
+                disabledForegroundColor: Colors.black87
+            ),
             onPressed: () {
               verificationModel
                   .setOtp(verificationModel.oTPTextController.text);
@@ -65,6 +67,7 @@ class OtpBottomSheet extends StatelessWidget {
                         context: context,
                         builder: (BuildContext ctx) {
                           return ErrorDialogue(
+                            key: Key('error-dialogue-key'),
                             errorTitle: "Wrong OTP",
                             errorMessage:
                             "The OTP you entered is wrong please recheck and try again.",

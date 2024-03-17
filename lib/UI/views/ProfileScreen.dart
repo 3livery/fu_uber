@@ -108,39 +108,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.only(top: 5.0),
                     child: CircularFlatButton(
                       size: 100,
-                      onPressed: null,
+                      onPressed: () => {},
                       child: Icon(
                         Icons.directions_car,
                         color: Colors.deepPurpleAccent,
                         size: 50,
                       ),
                       name: "Rides",
+                      key: Key('directions-car'),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 60.0),
                     child: CircularFlatButton(
                       size: 120,
-                      onPressed: null,
+                      onPressed: () => {},
                       child: Icon(
                         Icons.settings,
                         color: Colors.deepPurpleAccent,
                         size: 70,
                       ),
                       name: "Settings",
+                      key: Key('settings'),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5.0),
                     child: CircularFlatButton(
                       size: 100,
-                      onPressed: null,
+                      onPressed: () => {},
                       child: Icon(
                         Icons.help,
                         color: Colors.deepPurpleAccent,
                         size: 50,
                       ),
                       name: "Help",
+                      key: Key('help'),
                     ),
                   )
                 ],

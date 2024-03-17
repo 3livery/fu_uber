@@ -54,8 +54,8 @@ class DemoData {
   static UserDetails currentUserDetails = UserDetails(
       "FDSfdfdsafFtt324sdf",
       "https://i.pinimg.com/originals/61/36/8f/61368f9b0c3b7fcd22a4a1fbd4c28864.jpg",
-      "Sahdeep Singh",
-      "sahdeepsingh98@gmail.com",
+      "Tree Livery",
+      "test@3livery.com",
       "0123456789",
       null,
       previousRides,

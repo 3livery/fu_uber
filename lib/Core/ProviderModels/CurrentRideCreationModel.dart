@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fu_uber/Core/Enums/Enums.dart';
 
 class CurrentRideCreationModel extends ChangeNotifier {
-  RideType selectedRideType;
+  late RideType selectedRideType;
   bool riderFound = false;
 
   CurrentRideCreationModel() {

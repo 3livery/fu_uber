@@ -4,31 +4,31 @@ import 'package:location/location.dart';
 class PermissionHandlerModel extends ChangeNotifier {
   Location location = Location();
 
-  bool isLocationPerGiven = false;
-  bool isLocationSerGiven = false;
+  PermissionStatus isLocationPerGiven = PermissionStatus.denied;
+  PermissionStatus isLocationSerGiven = PermissionStatus.denied;
 
   PermissionHandlerModel() {
-    location.changeSettings(accuracy: LocationAccuracy.LOW);
+    location.changeSettings(accuracy: LocationAccuracy.low);
     location.hasPermission().then((isGiven) {
-      if (isGiven) {
-        isLocationPerGiven = true;
+      if (isGiven == PermissionStatus.granted) {
+        isLocationPerGiven = PermissionStatus.granted;
         location.serviceEnabled().then((isEnabled) {
           if (isEnabled) {
-            isLocationSerGiven = true;
+            isLocationSerGiven = PermissionStatus.granted;
           } else {
-            isLocationSerGiven = false;
+            isLocationSerGiven = PermissionStatus.denied;
           }
           notifyListeners();
         });
       } else {
-        isLocationPerGiven = false;
+        isLocationPerGiven = PermissionStatus.denied;
       }
       notifyListeners();
     });
   }
 
-  Future<bool> checkAppLocationGranted() {
-    return location.hasPermission();
+  Future<bool> checkAppLocationGranted() async {
+    return await location.hasPermission() == PermissionStatus.granted;
   }
 
   requestAppLocationPermission() {
@@ -44,7 +44,7 @@ class PermissionHandlerModel extends ChangeNotifier {
 
   requestLocationServiceToEnable() {
     location.requestService().then((isGiven) {
-      isLocationSerGiven = isGiven;
+      isLocationSerGiven = isGiven ? PermissionStatus.granted : PermissionStatus.denied;
       notifyListeners();
     });
   }

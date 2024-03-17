@@ -57,11 +57,13 @@ class _SearchingRideBoxState extends State<SearchingRideBox>
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: FlatButton(
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                              foregroundColor: ConstantColors.PrimaryColor,
+                          ),
                           onPressed: () {
                             uiNotifier.searchingRideNotify();
                           },
-                          color: ConstantColors.PrimaryColor,
                           child: Text(
                             "Cancel",
                             style: TextStyle(color: Colors.white, fontSize: 20),

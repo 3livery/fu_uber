@@ -15,14 +15,14 @@ class RideBookedModel extends ChangeNotifier {
   /// Tag for Logs
   static const TAG = "MapModel";
 
-  GoogleMapController _mapController;
+  late GoogleMapController _mapController;
   MapRepository mapRepository = MapRepository();
 
   /// Origin Latitude and Longitude
-  LatLng originLatLng;
+  late LatLng originLatLng;
 
   /// Destination Latitude and Longitude
-  LatLng destinationLatLng;
+  late LatLng destinationLatLng;
 
   /// Default Camera Zoom
   double currentZoom = 19;
@@ -104,14 +104,14 @@ class RideBookedModel extends ChangeNotifier {
         position: originLatLng,
         flat: true,
         icon: BitmapDescriptor.fromBytes(
-          await Utils.getBytesFromAsset("images/pickupIcon.png", 70),
+            (await Utils.getBytesFromAsset("images/pickupIcon.png", 70))!,
         )));
     _markers.add(Marker(
         markerId: MarkerId(Constants.destinationMarkerId),
         position: destinationLatLng,
         flat: true,
         icon: BitmapDescriptor.fromBytes(
-          await Utils.getBytesFromAsset("images/destinationIcon.png", 70),
+            (await Utils.getBytesFromAsset("images/destinationIcon.png", 70))!,
         )));
 
     /// for now we have added the single marker
@@ -120,7 +120,7 @@ class RideBookedModel extends ChangeNotifier {
         position: DemoData.nearbyDrivers[2].currentLocation, //taking demo data
         flat: true,
         icon: BitmapDescriptor.fromBytes(
-          await Utils.getBytesFromAsset("images/carIcon.png", 60),
+            (await Utils.getBytesFromAsset("images/carIcon.png", 60))!,
         )));
     notifyListeners();
   }

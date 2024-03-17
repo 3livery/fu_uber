@@ -15,7 +15,7 @@ class PredictionListAutoComplete extends StatefulWidget {
   final onListItemTap itemTap;
 
   PredictionListAutoComplete(
-      {Key key, @required this.textField, @required this.data, this.itemTap})
+      {required Key key, required this.textField, required this.data, required this.itemTap})
       : super(key: key);
 
   @override
@@ -33,7 +33,7 @@ class _PredictionListAutoCompleteState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         widget.textField,
-        widget.data != null && widget.data.isNotEmpty
+        widget.data.isNotEmpty
             ? Column(
           children: <Widget>[
             ListView.builder(
@@ -43,7 +43,7 @@ class _PredictionListAutoCompleteState
                   return InkResponse(
                       onTap: () => widget.itemTap(widget.data[index]),
                       child: PredictionItemView(
-                          prediction: widget.data[index]));
+                          prediction: widget.data[index], key: Key('prediction-item-view'),));
                 }),
             ListTile(
               title: Text("Powered By Google"),

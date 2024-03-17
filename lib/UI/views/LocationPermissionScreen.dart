@@ -4,6 +4,7 @@ import 'package:fu_uber/Core/Constants/colorConstants.dart';
 import 'package:fu_uber/Core/ProviderModels/MapModel.dart';
 import 'package:fu_uber/Core/ProviderModels/PermissionHandlerModel.dart';
 import 'package:fu_uber/UI/views/MainScreen.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class LocationPermissionScreen extends StatefulWidget {
@@ -16,8 +17,8 @@ class LocationPermissionScreen extends StatefulWidget {
 
 class _LocationPermissionScreenState extends State<LocationPermissionScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController loadingController;
-  Animation<double> animation;
+  late AnimationController loadingController;
+  late Animation<double> animation;
 
   @override
   void dispose() {
@@ -50,10 +51,10 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
         child: Stack(
           children: <Widget>[
             SpringEffect(),
-            permModel.isLocationPerGiven
+            permModel.isLocationPerGiven == PermissionStatus.granted
                 ? Align(
               alignment: Alignment(0, 0.5),
-              child: permModel.isLocationSerGiven
+              child: permModel.isLocationSerGiven == PermissionStatus.granted
                   ? Text("Fetching Location...")
                   : InkResponse(
                 onTap: () {
@@ -118,10 +119,10 @@ class SpringEffect extends StatefulWidget {
 }
 
 class SpringState extends State<SpringEffect> with TickerProviderStateMixin {
-  AnimationController controller;
-  AnimationController controller2;
-  Animation<double> animation;
-  SpringSimulation simulation;
+  late AnimationController controller;
+  late AnimationController controller2;
+  late Animation<double> animation;
+  late SpringSimulation simulation;
   double _position = 0;
 
   @override

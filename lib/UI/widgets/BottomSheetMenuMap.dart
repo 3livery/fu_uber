@@ -56,19 +56,21 @@ class BottomSheetMapMenu extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    CarouselSlider(
-                      enableInfiniteScroll: false,
-                      initialPage: 1,
-                      enlargeCenterPage: true,
-                      scrollDirection: Axis.horizontal,
-                      onPageChanged: currentRideCreationModel.carTypeChanged,
-                      items: DemoData.typesOfCar.map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return CarSelectionCard(carTypeMenu: i);
-                          },
-                        );
-                      }).toList(),
+                    CarouselSlider.builder(
+                      itemCount: DemoData.typesOfCar.length,
+                      options: CarouselOptions(
+                        enableInfiniteScroll: false,
+                        initialPage: 1,
+                        enlargeCenterPage: true,
+                        scrollDirection: Axis.horizontal,
+                        onPageChanged: (index, reason) {
+                          currentRideCreationModel.carTypeChanged(index);
+                        },
+                      ),
+                      itemBuilder: (context, index, realIndex) {
+                        var i = DemoData.typesOfCar[index];
+                        return CarSelectionCard(key: Key('card-selection-key-${index}'), carTypeMenu: i);
+                      },
                     ),
                   ],
                 ),
@@ -111,7 +113,7 @@ class BottomSheetMapMenu extends StatelessWidget {
                     Future.delayed(Duration(seconds: 5), () {
                       uiNotifiersModel.searchingRideNotify();
                       navigatorKey.currentState
-                          .pushReplacementNamed(OnGoingRideScreen.route);
+                          ?.pushReplacementNamed(OnGoingRideScreen.route);
                     });
                   },
                   child: Container(

@@ -1,4 +1,4 @@
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +8,7 @@ class NoInternetWidget extends StatefulWidget {
 }
 
 class _NoInternetWidgetState extends State<NoInternetWidget> {
-  bool isConnected;
+  late bool isConnected;
 
   @override
   void initState() {

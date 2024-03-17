@@ -25,7 +25,7 @@ class MapModel extends ChangeNotifier {
   static const TAG = "MapModel";
 
   //Current Position and Destination Position and Pickup Point
-  LatLng _currentPosition, _destinationPosition, _pickupPosition;
+  LatLng? _currentPosition, _destinationPosition, _pickupPosition;
 
   // Default Camera Zoom
   double currentZoom = 19;
@@ -37,13 +37,13 @@ class MapModel extends ChangeNotifier {
   final Set<Polyline> _polyLines = Set();
 
   // Pickup Predictions using Places Api, It is the list of Predictions we get from the textchanges the PickupText field in the mainScreen
-  List<Prediction> pickupPredictions = [];
+  List<Prediction>? pickupPredictions = [];
 
   //Same as PickupPredictions but for destination TextField in mainScreen
-  List<Prediction> destinationPredictions = [];
+  List<Prediction>? destinationPredictions = [];
 
   //Map Controller
-  GoogleMapController _mapController;
+  GoogleMapController? _mapController;
 
   // Map Repository for connection to APIs
   MapRepository _mapRepository = MapRepository();
@@ -59,19 +59,19 @@ class MapModel extends ChangeNotifier {
   location.Location _location = location.Location();
 
   // currentPosition Getter
-  LatLng get currentPosition => _currentPosition;
+  LatLng? get currentPosition => _currentPosition;
 
   // currentPosition Getter
-  LatLng get destinationPosition => _destinationPosition;
+  LatLng? get destinationPosition => _destinationPosition;
 
   // currentPosition Getter
-  LatLng get pickupPosition => _pickupPosition;
+  LatLng? get pickupPosition => _pickupPosition;
 
   // MapRepository Getter
   MapRepository get mapRepo => _mapRepository;
 
   // MapController Getter
-  GoogleMapController get mapController => _mapController;
+  GoogleMapController? get mapController => _mapController;
 
   // Markers Getter
   Set<Marker> get markers => _markers;
@@ -91,8 +91,11 @@ class MapModel extends ChangeNotifier {
     fetchNearbyDrivers(DemoData.nearbyDrivers);
 
     //A listener on _location to always get current location and update it.
-    _location.onLocationChanged().listen((event) async {
-      _currentPosition = LatLng(event.latitude, event.longitude);
+    _location.onLocationChanged.listen((event) async {
+      assert(event.latitude != null || event.longitude != null, throw "Expecting latitude and longitude");
+      assert(event.heading != null , throw "No heading in event");
+
+      _currentPosition = LatLng(event.latitude!, event.longitude!);
       markers.removeWhere((marker) {
         return marker.markerId.value == Constants.currentLocationMarkerId;
       });
@@ -100,12 +103,12 @@ class MapModel extends ChangeNotifier {
           Marker(markerId: MarkerId(Constants.currentLocationMarkerId)));
       markers.add(Marker(
           markerId: MarkerId(Constants.currentLocationMarkerId),
-          position: _currentPosition,
-          rotation: event.heading - 78,
+          position: _currentPosition!,
+          rotation: event.heading! - 78,
           flat: true,
           anchor: Offset(0.5, 0.5),
           icon: BitmapDescriptor.fromBytes(
-            await Utils.getBytesFromAsset("images/currentUserIcon.png", 280),
+              (await Utils.getBytesFromAsset("images/currentUserIcon.png", 280))!,
           )));
       notifyListeners();
     });
@@ -154,7 +157,7 @@ class MapModel extends ChangeNotifier {
     ProjectLog.logIt(TAG, "getUserCurrentLocation", "...");
 
     _location.getLocation().then((data) async {
-      _currentPosition = LatLng(data.latitude, data.longitude);
+      _currentPosition = LatLng(data.latitude!, data.longitude!);
 
       _pickupPosition = _currentPosition;
 
@@ -162,7 +165,7 @@ class MapModel extends ChangeNotifier {
           TAG, "Initial Position is ", _currentPosition.toString());
 
       pickupFormFieldController.text = await mapRepo
-          .getPlaceNameFromLatLng(LatLng(data.latitude, data.longitude));
+          .getPlaceNameFromLatLng(LatLng(data.latitude!, data.longitude!));
       updatePickupMarker();
       notifyListeners();
     });
@@ -188,12 +191,14 @@ class MapModel extends ChangeNotifier {
         TAG, "updateDestinationMarker", destinationPosition.toString());
     markers.add(Marker(
         markerId: MarkerId(Constants.destinationMarkerId),
-        position: destinationPosition,
+        position: destinationPosition!,
         draggable: true,
         onDragEnd: onDestinationMarkerDragged,
         anchor: Offset(0.5, 0.5),
         icon: BitmapDescriptor.fromBytes(
-            await Utils.getBytesFromAsset("images/destinationIcon.png", 80))));
+            (await Utils.getBytesFromAsset("images/destinationIcon.png", 80))!
+        )
+    ));
     notifyListeners();
   }
 
@@ -203,17 +208,19 @@ class MapModel extends ChangeNotifier {
     ProjectLog.logIt(TAG, "updatePickupMarker", pickupPosition.toString());
     _markers.add(Marker(
         markerId: MarkerId(Constants.pickupMarkerId),
-        position: pickupPosition,
+        position: pickupPosition!,
         draggable: true,
         onDragEnd: onPickupMarkerDragged,
         anchor: Offset(0.5, 0.5),
         icon: BitmapDescriptor.fromBytes(
-            await Utils.getBytesFromAsset("images/pickupIcon.png", 80))));
+            (await Utils.getBytesFromAsset("images/pickupIcon.png", 80))!
+        )
+    ));
     notifyListeners();
   }
 
   ///Updating Pickup Suggestions
-  updatePickupPointSuggestions(List<Prediction> predictions) {
+  updatePickupPointSuggestions(List<Prediction>? predictions) {
     ProjectLog.logIt(
         TAG, "updatePickupPointSuggestions", predictions.toString());
     pickupPredictions = predictions;
@@ -221,7 +228,7 @@ class MapModel extends ChangeNotifier {
   }
 
   ///Updating Destination
-  updateDestinationSuggestions(List<Prediction> predictions) {
+  updateDestinationSuggestions(List<Prediction>? predictions) {
     ProjectLog.logIt(
         TAG, "updateDestinationSuggestions", predictions.toString());
     destinationPredictions = predictions;
@@ -233,9 +240,9 @@ class MapModel extends ChangeNotifier {
     updateDestinationSuggestions(null);
     ProjectLog.logIt(
         TAG, "onDestinationPredictionItemClick", prediction.description);
-    destinationFormFieldController.text = prediction.description;
+    destinationFormFieldController.text = prediction.description!;
     _destinationPosition =
-    await mapRepo.getLatLngFromAddress(prediction.description);
+    await mapRepo.getLatLngFromAddress(prediction.description!);
     onDestinationPositionChanged();
     notifyListeners();
   }
@@ -245,10 +252,10 @@ class MapModel extends ChangeNotifier {
     updatePickupPointSuggestions(null);
     ProjectLog.logIt(
         TAG, "onPickupPredictionItemClick", prediction.description);
-    pickupFormFieldController.text = prediction.description;
+    pickupFormFieldController.text = prediction.description!;
 
     _pickupPosition =
-    await mapRepo.getLatLngFromAddress(prediction.description);
+    await mapRepo.getLatLngFromAddress(prediction.description!);
     onPickupPositionChanged();
     notifyListeners();
   }
@@ -264,7 +271,7 @@ class MapModel extends ChangeNotifier {
       return;
     }
     await mapRepo
-        .getRouteCoordinates(_pickupPosition, _destinationPosition)
+        .getRouteCoordinates(_pickupPosition!, _destinationPosition!)
         .then((route) {
       createCurrentRoute(route);
       notifyListeners();
@@ -283,7 +290,7 @@ class MapModel extends ChangeNotifier {
     ProjectLog.logIt(TAG, "onMapCreated", "null");
     _mapController = controller;
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
-      _mapController.setMapStyle(string);
+      _mapController?.setMapStyle(string);
     });
     notifyListeners();
   }
@@ -297,21 +304,21 @@ class MapModel extends ChangeNotifier {
 
   void randomMapZoom() {
     mapController
-        .animateCamera(CameraUpdate.zoomTo(15.0 + Random().nextInt(5)));
+        ?.animateCamera(CameraUpdate.zoomTo(15.0 + Random().nextInt(5)));
   }
 
   void onMyLocationFabClicked() {
     // check if ride is ongoing or not, if not that show current position
     // else we will show the camera at the mid point of both locations
     ProjectLog.logIt(TAG, "Moving to Current Position", "...");
-    mapController.animateCamera(CameraUpdate.newLatLngZoom(
-        currentPosition, 15.0 + Random().nextInt(4)));
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(
+        currentPosition!, 15.0 + Random().nextInt(4)));
     //its overriding the above statement of zoom. beware
     //randomMapZoom();
   }
 
   void fetchNearbyDrivers(List<Driver> list) {
-    if (list != null && list.isNotEmpty)
+    if (list.isNotEmpty)
       list.forEach((driver) async {
         markers.add(Marker(
             markerId: MarkerId(driver.driverId),
@@ -319,15 +326,17 @@ class MapModel extends ChangeNotifier {
             position: driver.currentLocation,
             anchor: Offset(0.5, 0.5),
             icon: BitmapDescriptor.fromBytes(
-                await Utils.getBytesFromAsset("images/carIcon.png", 80))));
+                (await Utils.getBytesFromAsset("images/carIcon.png", 80))!
+            )
+        ));
         notifyListeners();
       });
   }
 
   void onDestinationPositionChanged() {
     updateDestinationMarker();
-    mapController.animateCamera(
-        CameraUpdate.newLatLngZoom(destinationPosition, randomZoom));
+    mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(destinationPosition!, randomZoom));
     if (pickupPosition != null) sendRouteRequest();
     notifyListeners();
   }
@@ -335,7 +344,7 @@ class MapModel extends ChangeNotifier {
   void onPickupPositionChanged() {
     updatePickupMarker();
     mapController
-        .animateCamera(CameraUpdate.newLatLngZoom(pickupPosition, randomZoom));
+        ?.animateCamera(CameraUpdate.newLatLngZoom(pickupPosition!, randomZoom));
     if (destinationPosition != null) sendRouteRequest();
     notifyListeners();
   }
@@ -366,10 +375,10 @@ class MapModel extends ChangeNotifier {
   }
 
   void animateCameraForOD() {
-    mapController.animateCamera(
+    mapController?.animateCamera(
       CameraUpdate.newLatLngBounds(
           LatLngBounds(
-              northeast: pickupPosition, southwest: destinationPosition),
+              northeast: pickupPosition!, southwest: destinationPosition!),
           100),
     );
   }
